@@ -1,0 +1,5 @@
+*.pyc
+
+home-assistant-bot.ini
+
+home-assistant-bot.log
