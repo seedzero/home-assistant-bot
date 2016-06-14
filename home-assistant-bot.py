@@ -57,7 +57,7 @@ def postToReddit(entries, flair, sticky=None):
         r.select_flair(sub,
                        flair_template_id=flair)
         log("Flair " + flair + " added for post " + entry['title'])
-        if newsticky and entry['id'] == newsticky['id']:
+        if sticky and entry['id'] == sticky['id']:
             sub.sticky(bottom=False)
             log("Post " + entry['title'] + "made sticky.")
 
