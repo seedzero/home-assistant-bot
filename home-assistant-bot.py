@@ -53,7 +53,12 @@ def login():
 def postToReddit(entries, flair):
     for entry in reversed(entries):
         log("Attempting to post: " + entry['title'])
-        sub = r.submit(subreddit, entry['title'], url=entry['link'])
+        try:
+            sub = r.submit(subreddit, entry['title'], url=entry['link'])
+        except praw.errors.AlreadySubmitted:
+            log("The link " + entry['link'] + " has already been posted to" +
+                " Reddit")
+            continue
         log("Posted " + entry['title'] + " " + entry['link'])
         r.select_flair(sub,
                        flair_template_id=flair)
