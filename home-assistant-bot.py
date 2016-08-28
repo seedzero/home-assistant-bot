@@ -50,7 +50,7 @@ def login():
     return r
 
 
-def postToReddit(entries, flair):
+def postToReddit(entries, flair, sticky=None):
     for entry in reversed(entries):
         log("Attempting to post: " + entry['title'])
         try:
@@ -63,6 +63,10 @@ def postToReddit(entries, flair):
         r.select_flair(sub,
                        flair_template_id=flair)
         log("Flair " + flair + " added for post " + entry['title'])
+
+        if sticky and entry['id'] == sticky['id']:
+            sub.sticky(bottom=True)
+            log("Post " + entry['title'] + "made sticky.")
 
 r = login()
 
@@ -80,8 +84,10 @@ for entry in rel['entries']:
         unposted_releases.append(entry)
 
 if unposted_releases:
+    newsticky = unposted_releases[0]
     postToReddit(unposted_releases,
-                 fl['release'])
+                 fl['release'],
+                 sticky=newsticky)
     hi['lastrelease'] = unposted_releases[0]['id']
 else:
     log("No unposted releases.")
