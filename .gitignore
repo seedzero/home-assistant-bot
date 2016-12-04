@@ -3,3 +3,5 @@
 home-assistant-bot.ini
 
 home-assistant-bot.log
+
+.DS_Store

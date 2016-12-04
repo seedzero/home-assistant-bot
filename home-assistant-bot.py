@@ -44,28 +44,30 @@ last_blog = hi['lastblog']
 
 
 def login():
-    r = praw.Reddit(c['app_ua'])
-    r.set_oauth_app_info(c['app_id'], c['app_secret'], c['app_uri'])
-    r.refresh_access_information(c['app_refresh'])
-    return r
+    reddit = praw.Reddit(user_agent=c['app_ua'],
+                         client_id=c['app_id'],
+                         client_secret=c['app_secret'],
+                         username='HomeAssistantBot',
+                         refresh_token=c['app_refresh'])
+    return reddit
 
 
 def postToReddit(entries, flair, sticky=None):
     for entry in reversed(entries):
         log("Attempting to post: " + entry['title'])
         try:
-            sub = r.submit(subreddit, entry['title'], url=entry['link'])
-        except praw.errors.AlreadySubmitted:
-            log("The link " + entry['link'] + " has already been posted to" +
-                " Reddit")
+            sr = r.subreddit(subreddit)
+            sub = sr.submit(entry['title'], url=entry['link'], send_replies=False, resubmit=False)
+        except praw.exceptions.APIException as ex:
+            template = "An exception of type {0} occured. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            log(message)
             continue
         log("Posted " + entry['title'] + " " + entry['link'])
-        r.select_flair(sub,
-                       flair_template_id=flair)
+        sub.flair.select(flair)
         log("Flair " + flair + " added for post " + entry['title'])
-
         if sticky and entry['id'] == sticky['id']:
-            sub.sticky(bottom=True)
+            sub.mod.sticky(state=True, bottom=True)
             log("Post " + entry['title'] + "made sticky.")
 
 r = login()
