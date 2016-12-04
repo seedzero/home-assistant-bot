@@ -57,7 +57,10 @@ def postToReddit(entries, flair, sticky=None):
         log("Attempting to post: " + entry['title'])
         try:
             sr = r.subreddit(subreddit)
-            sub = sr.submit(entry['title'], url=entry['link'], send_replies=False, resubmit=False)
+            sub = sr.submit(entry['title'],
+                            url=entry['link'],
+                            send_replies=False,
+                            resubmit=False)
         except praw.exceptions.APIException as ex:
             template = "An exception of type {0} occured. Arguments:\n{1!r}"
             message = template.format(type(ex).__name__, ex.args)
